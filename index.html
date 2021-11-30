@@ -29,13 +29,33 @@
             </div>
             <div class="right-container">
                 <div class="category-nav">
-                    <div class="nav-items">
-                        <span class="first">개발공부</span>
-                        <span class="second">언어</span>
-                        <span class="third">JavaScript</span>
-                        <span class="fourth">자료형</span>
-                        <span class="fifth">X</span>
-                    </div>
+                    <ul id="nav" class="menu">
+                        <li class="menu-item first"><span>개발공부</span></li>
+                        <li class="menu-item second"><span>언어</span>
+                            <ul class="submenu second">
+                                <li>언어</li>
+                                <li>운영체제</li>
+                            </ul>
+                        </li>
+                        <li class="menu-item third"><span>C</span>
+                            <ul class="submenu third">
+                                <li>C</li>
+                                <li>JavaScript</li>
+                            </ul>
+                        </li>
+                        <li class="menu-item fourth"><span>자료형</span>
+                            <ul class="submenu fourth">
+                                <li>자료형</li>
+                                <li>비동기</li>
+                            </ul>
+                        </li>
+                        <li class="menu-item fifth"><span>V</span>
+                            <ul class="submenu fifth">
+                                <li>var</li>
+                                <li>let</li>
+                            </ul>
+                        </li>
+                    </ul>
                     <div class="add-button-category">
                         <button>+</button>
                     </div>
@@ -60,14 +80,14 @@
             개발 공부 > 언어 > JavaScript > 자료형
         </div>
         <div class="title-input">
-            <input class="input-title" type="text" placeholder="제목">
+            <input class="input-title" type="text" placeholder="제목 입력">
         </div>
         <div class="contents-input">
-            <textarea class="input-contents"></textarea>
+            <textarea class="input-contents" placeholder="내용 입력"></textarea>
         </div>
         <div class="buttons">
-            <button class="input-button">취소</button>
-            <button class="input-button">확인</button>
+            <button class="input-button" id="cancel">취소</button>
+            <button class="input-button" id="confirm">확인</button>
         </div>
     </div>
 </body>
