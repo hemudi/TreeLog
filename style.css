@@ -246,13 +246,24 @@ ul.log-list {
     background-color: #F9DCC4;
 }
 
-.log-title {
+.log-top {
+    display: flex;
     width: 100%;
     height: 80px;
     text-align: start;
     line-height: 80px;
     padding-left: 10px;
     font-size: x-large;
+}
+
+.log-title {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+.log-date {
+    margin-right: 10px;
 }
 
 .log-contents {
