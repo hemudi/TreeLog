@@ -20,19 +20,19 @@
             <div class="container">
                 <div class="left-container">
                     <div class="top-category">
-                        <ul class="top-category-list">
-                            <li class="top-item"><button class="top-category-button">상위 카테고리</button></li>
+                        <ul class="top-category-list" id="top-category-list">
+                            <li class="top-item" id="top-item"><button class="top-category-button">상위 카테고리</button></li>
                         </ul>
                     </div>
                     <div class="add-log">
-                        <button class="add-log-button">ADD LOG</button>
+                        <button class="add-log-button" id="add-log-button">ADD LOG</button>
                     </div>
                 </div>
                 <div class="right-container">
                     <div class="category-nav">
                         <ul id="nav" class="menu">
-                            <li class="menu-item first"><span>개발공부</span></li>
-                            <li class="menu-item second"><span>언어</span>
+                            <li class="menu-item first" id="nav-1"><span>개발공부</span></li>
+                            <li class="menu-item second" id="nav-2"><span>언어</span>
                                 <ul class="submenu second">
                                     <li>언어</li>
                                     <li>운영체제</li>
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="log-list">
-                        <ul class="log-list">
+                        <ul class="log-list" id="log-list">
                             <li class="log-item">
                                 <div class="log-top">
                                     <h3 class="log-title">제목</h3>
@@ -77,14 +77,14 @@
         </div>
         <div class="dimmed-layer"></div>
         <div class="input-container">
-            <div class="input-category-nav">
+            <div class="input-category-nav" id="input-nav">
                 개발 공부 > 언어 > JavaScript > 자료형
             </div>
             <div class="title-input">
-                <input class="input-title" type="text" placeholder="제목 입력">
+                <input class="input-title" id="input-title" type="text" placeholder="제목 입력">
             </div>
             <div class="contents-input">
-                <textarea class="input-contents" placeholder="내용 입력"></textarea>
+                <textarea class="input-contents" id="input-contents" placeholder="내용 입력"></textarea>
             </div>
             <div class="buttons">
                 <button class="input-button" id="cancel">취소</button>
