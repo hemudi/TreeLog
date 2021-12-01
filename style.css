@@ -126,24 +126,57 @@ li.top-item {
 
 .add-log {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     padding-top: 10px;
     width: 100%;
     height: 80px;
 }
 
-.add-log-button {
-    margin: auto 0;
-    width: 100%;
+.add-log > button {
+    flex: 1;
     height: 100%;
     font-size: x-large;
     border: 3px solid #000000;
     background-color: #abf9ff;
 }
 
-.add-log-button:hover {
+.add-log > button:hover {
     background-color: #72dfe7;
+}
+
+.add-top-button {
+    margin-right: 2px;
+    display: block;
+}
+
+.add-log-button {
+    margin-left: 2px;
+    display: none;
+}
+
+.add-top-button.input {
+    display: none;
+}
+
+.add-log-button.input {
+    display: none;
+}
+
+.add-input {
+    display: none;
+    flex: 1;
+    height: 100%;
+    padding-left: 6px;
+    font-size: large;
+}
+
+.add-input.input {
+    display: block;
+}
+
+.selected {
+    display: block;
 }
 
 .category-nav {

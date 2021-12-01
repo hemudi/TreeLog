@@ -1,0 +1,16 @@
+{
+  "name": "treelog",
+  "type": "module",
+  "description": "treelog project",
+  "main": "./js/app/main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hemudi/TreeLog.git"
+  },
+  "author": "Hemudi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hemudi/TreeLog/issues"
+  },
+  "homepage": "https://github.com/hemudi/TreeLog#readme"
+}

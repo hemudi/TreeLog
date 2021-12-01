@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <link href='http://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="./js/app/main.js"></script>
     <title>#TreeLog</title>
 </head>
-
 <body>
     <div class="contents">
         <div class="main">
@@ -21,11 +21,12 @@
                 <div class="left-container">
                     <div class="top-category">
                         <ul class="top-category-list" id="top-category-list">
-                            <li class="top-item" id="top-item"><button class="top-category-button">상위 카테고리</button></li>
                         </ul>
                     </div>
                     <div class="add-log">
-                        <button class="add-log-button" id="add-log-button">ADD LOG</button>
+                        <button class="add-top-button" id="top">ADD TOP</button>
+                        <button class="add-log-button" id="log">ADD LOG</button>
+                        <input class="add-input" id="add_input" type="text" placeholder="입력 후 생성은 enter를, 취소는 esc">
                     </div>
                 </div>
                 <div class="right-container">
@@ -75,8 +76,8 @@
                 </div>
             </div>
         </div>
-        <div class="dimmed-layer"></div>
-        <div class="input-container">
+        <div class="dimmed-layer" id="dimmed-layer"></div>
+        <div class="input-container" id="input-container">
             <div class="input-category-nav" id="input-nav">
                 개발 공부 > 언어 > JavaScript > 자료형
             </div>
