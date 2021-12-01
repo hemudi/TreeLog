@@ -1,7 +1,16 @@
-class CategoryContents {
-    constructor(categoryName){
-        this.categoryName = categoryName;
+export default class CategoryContents {
+    constructor(path){
+        this.path = path;
         this.contentsList = [];
+        this.TOP_CATEGORY_INDEX = 0;
+    }
+
+    getPath(){
+        return this.path;
+    }
+
+    getTopCategory(){
+        return this.path[TOP_CATEGORY_INDEX];
     }
 
     addContents(title, contents){

@@ -1,50 +1,56 @@
-class CategoryTree {
+export default class CategoryTree {
     constructor(topName) {
         this.topCategory = {
             name: topName,
             children: []
         }
-        this.parentCategory = null;
-        this.currentCategory = this.topCategory;
+    }
+
+    getTopCategoryName(){
+        return this.topCategory['name'];
     }
 
     getTopCategory() {
         return this.topCategory;
     }
 
-    getCurrentCategory() {
-        return this.currentCategory;
+    /*=============== 새 카테고리 추가 ===============*/
+    addNewCategory(path, newCategoryName){
+        let parentCategory = getCurrentCategory(path);
+        const child = this.getChild(parentCategory, newCategoryName);
+
+        // 이름 중복
+        if(child !== null) return false;
+
+        parentCategory['children'].push({
+            name : newCategoryName,
+            children : []
+        });
+
+        return true
     }
 
-    getParentCategory() {
-        return this.parentCategory;
+    /* 경로 이용한 현재 카테고리 탐색 */
+    getCurrentCategory(path, currentCategory = this.topCategory){
+        if(path.length == 1){
+            return currentCategory;
+        }
+
+        path.shift();
+        return this.getCurrentCategory(path, getChild(currentCategory, path[0]));
     }
 
-    moveTo(category) {
-        this.parentCategory = this.currentCategory;
-        this.currentCategory = category;
+    /* 현재 카테고리의 자식을 이름으로 찾아서 반환 */
+    getChild(current, childName){
+        for(const child of current['children']){
+            if(child['name'] === childName) return child;
+        }
+        return null;
     }
 
-    moveToTopCategory() {
-        this.parentCategory = null;
-        this.currentCategory = this.topCategory;
-        return this.topCategory;
-    }
-
-    moveToChildCategory(selectedName) {
-        const childCategory = this.getChildCategory(selectedName);
-
-        if (childCategory === null) return null;
-        return this.moveTo(childCategory);
-    }
-
-    moveToCategory(parentName, selectedName){
-        const categoryToMove = this.searchTree(parentName, selectedName);
-        if(categoryToMove === false) return false;
-        return this.moveTo(categoryToMove);
-    }
-
-    searchTree(parentName, selectedName){
+    /*=============== 카테고리 이동할때 ===============*/
+    /* 전체 Tree 순회하면서 선택된 카테고리 찾기 */
+    getSelectedCategory(parentName = '', selectedName){
         let queue = this.topCategory['children'];
         let current = null;
         let child = null;
@@ -64,29 +70,9 @@ class CategoryTree {
         return child !== null ? child : false;
     }
 
-    getChildCategory(parent = null, childName) {
-        if(parent === null) parent = this.currentCategory;
-
-        const children = parent['children'];
-
-        for (const child of children) {
-            if (child.getName() === childName) {
-                return child;
-            }
-        }
-        return null;
-    }
-
-    addChildCategory(childName) {
-        if (this.getChildCategory(childName) !== null) return false; // 한 부모 내에서는 중복 불가능
-
-        const newCategory = {
-            name: childName,
-            children: []
-        };
-
-        this.currentCategory['child'].push(newCategory);
-        this.moveTo(newCategory);
-        return this.currentCategory;
+    getChildrenCategory(parentName = null, selectedName){
+        if(parentName === null) return this.topCategory['children'];
+        const selectedCategory = getCategory(parentName, selectedName);
+        return selectedCategory['children'];
     }
 }
