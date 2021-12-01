@@ -1,13 +1,22 @@
 export default class CategoryTree {
-    constructor(topName) {
+    constructor(topName, children = []) {
         this.topCategory = {
             name: topName,
-            children: []
+            children: children
         }
+    }
+
+    setTopCategory(category){
+        this.topCategory['name'] = category['name'];
+        this.topCategory['children'] = category['children'];
     }
 
     getTopCategoryName(){
         return this.topCategory['name'];
+    }
+
+    getTopCategoryChildren(){
+        return this.topCategory['children'];
     }
 
     getTopCategory() {
@@ -16,7 +25,7 @@ export default class CategoryTree {
 
     /*=============== 새 카테고리 추가 ===============*/
     addNewCategory(path, newCategoryName){
-        let parentCategory = getCurrentCategory(path);
+        let parentCategory = this.getCurrentCategory(path);
         const child = this.getChild(parentCategory, newCategoryName);
 
         // 이름 중복

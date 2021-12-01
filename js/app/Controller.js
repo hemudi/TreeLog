@@ -1,4 +1,3 @@
-import TOP_CATEGORY_CLICKED from '../util/constants.js';
 import constants from '../util/constants.js';
 
 export default class Controller {
@@ -11,6 +10,7 @@ export default class Controller {
         this.$input = document.querySelector(this.IDs['ADD_INPUT_ID']);
         this.$dimmed = document.querySelector(this.IDs['DIMMED_ID']);
         this.$input_container = document.querySelector(this.IDs['INPUT_ID']);
+        this.$addCateButton = document.querySelector('#add-button-category');
     }
 
     run() {
@@ -20,12 +20,58 @@ export default class Controller {
         this.setAddButtonClickEvent();
     }
 
-    viewEventDetector(eventName, dataObject = null) {
+    viewEventDetector(eventName, event = null) {
         const events = {
-            TOP_CATEGORY_CLICKED: () => {}
+            TOP_CATEGORY_CLICKED: () => {
+                this.categoryClickedEventHandler(event);
+            },
+            INPUT_CATEGORY: () => {
+                this.categoryInputEventHandler(event);
+            }
         }
 
         events[eventName]();
+    }
+
+    categoryClickedEventHandler(event) {
+        const $button = event.currentTarget;
+        const topName = $button.innerText;
+        const categoryTree = this.dataManager.getCategoryTree(topName);
+
+        if (categoryTree === null) return;
+        if (!this.viewManager.selectedTopCategory(categoryTree)) return;
+        this.toggleClass('selected');
+    }
+
+    categoryInputEventHandler(event){
+        const $form = event.currentTarget;
+        const categoryName = $form.value;
+        
+        if(categoryName === ''){
+            $form.value = '';
+            $form.placeholder = '이름을 입력해주세요.';
+            return;
+        }
+
+        const $ul = $form.parentNode.parentNode;
+        const path = this.getPath($ul.childNodes);
+
+        if(!this.dataManager.saveNewCategory(path, categoryName)){ 
+            $form.value = '';
+            $form.placeholder = '이미 존재하는 카테고리입니다....';
+            return;
+         }
+
+        this.viewManager.addNewCategory(categoryName);
+    }
+
+    getPath(childNodes){
+        const path = [];
+        for(const node of childNodes){
+            path.push(node.innerText);
+        }
+        path.pop();
+        return path;
     }
 
     setStoredCategory() {
@@ -40,9 +86,13 @@ export default class Controller {
     setInputEnterKeyEvent() {
         this.$input.addEventListener('keydown', (e) => {
             const key = e.key;
-            switch(key){
-                case 'Enter': this.addInputEventHandler(e); break;
-                case 'Escape': this.toggleClass('input'); break;
+            switch (key) {
+                case 'Enter':
+                    this.addInputEventHandler(e);
+                    break;
+                case 'Escape':
+                    this.toggleClass('input');
+                    break;
             }
         }, true);
     }
@@ -50,12 +100,19 @@ export default class Controller {
     addInputEventHandler(event) {
         const $input = event.currentTarget;
         const value = $input.value;
+
+        if(value === '') {
+            $input.value = '';
+            $input.placeholder = '상위 카테고리 이름을 입력해주세요.';
+            return;
+        };
+
         this.addTopCategory(value);
         this.toggleClass('input');
     }
 
-    addTopCategory(topName){
-        if(!this.dataManager.saveCategory(topName)) {
+    addTopCategory(topName) {
+        if (!this.dataManager.saveTopCategory(topName)) {
             this.$input.value = '';
             this.$input.getAttribute('placeholder') = '이미 존재하는 카테고리입니다!';
             return;
@@ -73,32 +130,35 @@ export default class Controller {
                 this.$addTopButton.classList.toggle(value);
                 break;
             case 'pop-up':
-                this.$dimmed.classList.toggle('pop-up');
-                this.$input_container.classList.toggle('pop-up');
+                this.$dimmed.classList.toggle(value);
+                this.$input_container.classList.toggle(value);
+                break;
+            case 'selected':
+                this.$addLogButton.classList.add(value);
+                this.$addCateButton.classList.add(value);
                 break;
         }
     }
 
     setAddButtonClickEvent() {
         this.$addTopButton.addEventListener('click', (e) => {
-            this.buttonClickEventHandler(e)
+            this.topClickEventHandler(e)
         });
         this.$addLogButton.addEventListener('click', (e) => {
-            this.buttonClickEventHandler(e)
+            this.toggleClass('pop-up');
         });
+        this.$addCateButton.addEventListener('click', (e) => {
+            this.addClickEventHandler(e)
+        })
     }
 
-    buttonClickEventHandler(event) {
-        const $clicked = event.currentTarget;
-        const type = $clicked.getAttribute('id');
+    topClickEventHandler(event) {
+        this.toggleClass('input');
+        this.$input.focus();
+    }
 
-        if (type === 'top') {
-            this.toggleClass('input');
-            this.$input.focus();
-            return;
-        }
-
-        this.toggleClass('pop-up');
+    addClickEventHandler(){
+        this.viewManager.plusButtonClicked();
     }
 
     topCategoryClickEventHandler(event) {

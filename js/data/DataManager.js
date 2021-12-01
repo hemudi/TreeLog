@@ -31,7 +31,16 @@ export default class DataManager {
     getStoredData(){
         const storedData = localStorage.getItem(this.storageKey);
         this.tempStorage = (storedData !== null ? JSON.parse(storedData) : this.tempStorage);
+        this.reParseObj();
         return this.tempStorage;
+    }
+
+    reParseObj(){
+        let topCategory = null;
+        for(const category of this.tempStorage['category']){
+            topCategory = category['tree']['topCategory'];
+            category['tree'] = new CategoryTree(topCategory['name'], topCategory['children']);
+        }
     }
 
     getStoredCategory(){
@@ -49,7 +58,7 @@ export default class DataManager {
     getCategoryTree(topName){
         for(const category of this.tempStorage['category']){
             if(category['topName'] === topName){
-                return category;
+                return category['tree'];
             };
         }
         return null;
@@ -65,7 +74,7 @@ export default class DataManager {
         return null;
     }
     
-    saveCategory(topCategoryName, categoryTree = null){
+    saveTopCategory(topCategoryName, categoryTree = null){
         const savedCategory = this.getCategoryTree(topCategoryName);
 
         // 변경의 경우
@@ -113,8 +122,8 @@ export default class DataManager {
         this.setLocalStorage();
     }
 
-    addNewCategory(path, newCategoryName){
-        const categoryTree = this.getCategoryContents(path[0]);
+    saveNewCategory(path, newCategoryName){
+        const categoryTree = this.getCategoryTree(path[0]);
         const result = categoryTree.addNewCategory(path, newCategoryName);
         
         if(!result) return false;
@@ -123,7 +132,7 @@ export default class DataManager {
         return true;
     }
 
-    addNewContents(path, title, contents){
+    saveNewContents(path, title, contents){
         const categoryContents = this.getContents(path);
         categoryContents.addContents(title, contents);
         this.setLocalStorage();
