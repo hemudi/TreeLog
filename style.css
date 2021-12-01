@@ -175,10 +175,6 @@ li.top-item {
     display: block;
 }
 
-.selected {
-    display: block;
-}
-
 .category-nav {
     display: flex;
     flex-direction: row;
@@ -194,11 +190,20 @@ li.top-item {
     align-items: center;
 }
 
-.add-button-category>button {
+.add-cate {
+    display: none;
     width: 100%;
     height: 100%;
     background-color: #A3C4F3;
     border: 3px solid #000000;
+}
+
+.add-cate:hover{
+    background-color: #638ac0;
+}
+
+.selected {
+    display: block;
 }
 
 div.log-list {
@@ -406,6 +411,13 @@ div.buttons {
     overflow: hidden;
 }
 
+.cate-input {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    padding-left: 8px;
+}
+
 .submenu {
 	display: none;
 	list-style: none;
@@ -424,23 +436,24 @@ div.buttons {
     overflow:hidden;
 }
 
-.menu > .first {
+/* 이거는 동적으로 어케 안되나...? */
+.menu-item.depth-1 {
     background-color: #5286ff;
 }
 
-.menu > .second {
+.menu-item.depth-2 {
     background-color: #749eff;
 }
 
-.menu > .third {
+.menu-item.depth-3 {
     background-color: #8fb0ff;
 }
 
-.menu > .fourth {
+.menu-item.depth-4 {
     background-color: #b3c9fa;
 }
 
-.menu > .fifth {
+.menu-item.depth-5 {
     background-color: #d3e1ff;
 }
 
