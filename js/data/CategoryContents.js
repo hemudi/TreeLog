@@ -13,8 +13,12 @@ export default class CategoryContents {
         return this.path[TOP_CATEGORY_INDEX];
     }
 
+    setContentsList(contentsList){
+        this.contentsList = contentsList;
+    }
+
     addContents(title, contents){
-        this.contents.push({
+        this.contentsList.push({
             id : this.getId(),
             title : title,
             contents : contents
@@ -29,11 +33,11 @@ export default class CategoryContents {
     }
 
     getContentsList(){
-        return this.contents;
+        return this.contentsList;
     }
 
     getId(){
-        const timeId = new Date();
-        return timeId.getTime();
+        const timeId = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') ;
+        return timeId;
     }
 }

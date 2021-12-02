@@ -8,8 +8,6 @@ export default class Controller {
         this.$addTopButton = document.querySelector(this.IDs['ADD_TOP_BUTTON_ID']);
         this.$addLogButton = document.querySelector(this.IDs['ADD_LOG_BUTTON_ID']);
         this.$input = document.querySelector(this.IDs['ADD_INPUT_ID']);
-        this.$dimmed = document.querySelector(this.IDs['DIMMED_ID']);
-        this.$input_container = document.querySelector(this.IDs['INPUT_ID']);
         this.$addCateButton = document.querySelector('#add-button-category');
     }
 
@@ -30,19 +28,43 @@ export default class Controller {
             },
             SUB_MENU_CLICKED: () => {
                 this.subMenuClickedEventHandler(event);
+            },
+            CONFIRM_CLICKED: () => {
+                this.inputConfirmProcess(event);
+            },
+            CANCEL_CLICKED: () => {
+                this.viewManager.closeInputForm();
+            },
+            LOG_CLICKED: () => {
+                this.popUpContents(event);
             }
         }
 
         events[eventName]();
     }
 
+    popUpContents(event){
+        const id = event.currentTarget.firstChild.childNodes[1].innerText;
+        const $nav = this.viewManager.getNavigator();
+        const path = this.getPath($nav.childNodes);
+        const contents = this.dataManager.getContentsUseId(path, id);
+        this.viewManager.openContents(path, contents['title'], contents['text']);
+    }
+
     categoryClickedEventHandler(event) {
         const $button = event.currentTarget;
         const topName = $button.innerText;
         const categoryTree = this.dataManager.getCategoryTree(topName);
+        const contentsObj = this.dataManager.getCurrentContents([topName]);
 
         if (categoryTree === null) return;
-        if (!this.viewManager.selectedTopCategory(topName, categoryTree.getTopCategoryChildren())) return;
+
+        this.viewManager.selectedTopCategory(topName, categoryTree.getTopCategoryChildren())
+
+        if(contentsObj !== null){
+            this.viewManager.updateLogList(contentsObj['contents']);
+        }
+
         this.toggleClass('selected');
     }
 
@@ -77,9 +99,17 @@ export default class Controller {
 
         $menu_item.firstChild.innerText = moveTo;
         const path = this.getPath($menu.childNodes, depth);
-        const children = this.dataManager.getChildren(path);
+        const children = this.dataManager.getChildren(path.slice());
         this.viewManager.clickedSubMenu($menu_item, children);
 
+        const contentsObj = this.dataManager.getCurrentContents(path);
+
+        if(contentsObj === null){
+            this.viewManager.clearLogList();    
+            return;
+        }
+        this.viewManager.updateLogList(contentsObj['contents']);
+        
         // view
         // 1. li span 이름 바꾸기
         // 2. 부모의 아래 형제 다 지우고 새로 구한 childList 로 하위 버튼 생성
@@ -96,7 +126,6 @@ export default class Controller {
                 depth--;
             }
         }
-        // path.pop();
         return path;
     }
 
@@ -133,17 +162,13 @@ export default class Controller {
             return;
         };
 
-        this.addTopCategory(value);
-        this.toggleClass('input');
-    }
-
-    addTopCategory(topName) {
-        if (!this.dataManager.saveTopCategory(topName)) {
+        if (!this.dataManager.saveTopCategory(value)) {
             this.$input.value = '';
-            this.$input.getAttribute('placeholder') = '이미 존재하는 카테고리입니다!';
-            return;
+            this.$input.placeholder = '이미 존재하는 카테고리입니다!';
+            return false;
         }
-        this.viewManager.addTopCategory(topName);
+        this.viewManager.addTopCategory(value);
+        this.toggleClass('input');
     }
 
     toggleClass(value) {
@@ -154,10 +179,6 @@ export default class Controller {
                 this.$input.classList.toggle(value);
                 this.$addLogButton.classList.toggle(value);
                 this.$addTopButton.classList.toggle(value);
-                break;
-            case 'pop-up':
-                this.$dimmed.classList.toggle(value);
-                this.$input_container.classList.toggle(value);
                 break;
             case 'selected':
                 this.$addLogButton.classList.add(value);
@@ -171,7 +192,7 @@ export default class Controller {
             this.topClickEventHandler(e)
         });
         this.$addLogButton.addEventListener('click', (e) => {
-            this.toggleClass('pop-up');
+            this.clickedAddLogEventHandler(e);
         });
         this.$addCateButton.addEventListener('click', (e) => {
             this.addClickEventHandler(e)
@@ -185,5 +206,21 @@ export default class Controller {
 
     addClickEventHandler(){
         this.viewManager.plusButtonClicked();
+    }
+
+    clickedAddLogEventHandler(e){
+        const $nav = this.viewManager.getNavigator();
+        const path = this.getPath($nav.childNodes);
+        this.viewManager.openInputForm(path);
+    }
+
+    inputConfirmProcess(e){
+        if(!this.viewManager.checkInputForm()) return;
+
+        const inputObj = this.viewManager.getInputData();
+
+        const contentsObj = this.dataManager.saveContentsObj(inputObj['path'], inputObj['title'], inputObj['contents']);
+        this.viewManager.updateLogList(contentsObj['contents']);
+        this.viewManager.closeInputForm();
     }
 }

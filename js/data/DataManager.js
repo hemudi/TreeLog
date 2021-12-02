@@ -1,7 +1,7 @@
 /*
     tempStorage = {
         category : [categoryObject],
-        contents : [contentsObject]
+        contentsList : [contentsObject]
     }
 
     categoryObject = {
@@ -11,7 +11,10 @@
 
     contentsObject = {
         path : path
-        contents : categoryContents
+        contents : [{
+            title : 
+            text :
+        }]
     }
 */
 
@@ -23,7 +26,7 @@ export default class DataManager {
         this.storageKey = storageKey
         this.tempStorage = {
             category : [],
-            contents : []
+            contentsList : []
         }
     }
 
@@ -41,6 +44,19 @@ export default class DataManager {
             topCategory = category['tree']['topCategory'];
             category['tree'] = new CategoryTree(topCategory['name'], topCategory['children']);
         }
+
+        // let categoryContents = null;
+        // let contentsObj = null;
+        // let array = null;
+        // let path;
+        // for(const contents of this.tempStorage['contentsList']){
+        //     path = contents['path'];
+        //     categoryContents = new CategoryContents(path);
+        //     contentsObj = contents['contents'];
+        //     array = contents['contentsList'];
+        //     // contentsList.setContentList(contents['contents']);
+        //     // contents = contentsList;
+        // }
     }
 
     getStoredCategory(){
@@ -48,7 +64,7 @@ export default class DataManager {
     }
 
     getStoredContents(){
-        return this.tempStorage['contents'];
+        return this.tempStorage['contentsList'];
     }
 
     setLocalStorage(){
@@ -64,16 +80,6 @@ export default class DataManager {
         return null;
     }
 
-    getCategoryContents(path){
-        const pathToString = path.join('');
-        for(const savedContents of this.tempStorage['contents']){
-            if(savedContents['path'].join('') === pathToString){
-                return savedContents;
-            }
-        }
-        return null;
-    }
-    
     saveTopCategory(topCategoryName, categoryTree = null){
         const savedCategory = this.getCategoryTree(topCategoryName);
 
@@ -100,26 +106,35 @@ export default class DataManager {
         return true;
     }
 
-    saveContentsObj(path, contents = null){
-        if(contents === null){
-            contents = new CategoryContents(path);
-        }
+    saveContentsObj(path, title, text){
+        const savedContents = this.getCurrentContents(path);
 
-        const savedContents = this.getCategoryContents(path);
-
-        if(savedContents !== null && contents !== null){
-            savedContents['contents'] = contents;
+        if(savedContents !== null){
+            savedContents['contents'].push({
+                id : this.getId(),
+                title : title,
+                text : text
+            });
                 this.setLocalStorage();
-                return;
+                return this.getCurrentContents(path);
         }
 
-        contents = new CategoryContents(path);
-        this.tempStorage['contents'].push({
-            path : contents.getPath(),
-            contents : contents
+        this.tempStorage['contentsList'].push({
+            path : path,
+            contents : [{
+                id : this.getId(),
+                title : title,
+                text : text
+            }]
         })
 
         this.setLocalStorage();
+        return this.getCurrentContents(path);
+    }
+
+    getId(){
+        const timeId = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') ;
+        return timeId;
     }
 
     saveNewCategory(path, newCategoryName){
@@ -132,15 +147,30 @@ export default class DataManager {
         return true;
     }
 
-    saveNewContents(path, title, contents){
-        const categoryContents = this.getContents(path);
-        categoryContents.addContents(title, contents);
-        this.setLocalStorage();
-    }
-
     getChildren(path){
         const categoryTree = this.getCategoryTree(path[0]);
         const children = categoryTree.getCurrentCategory(path)['children'];
         return children;
+    }
+
+    getCurrentContents(path){
+        for(const obj of this.tempStorage['contentsList']){
+            if(obj['path'].join('/') === path.join('/')){
+                return obj;
+            }
+        }
+
+        return null;
+    }
+
+    getContentsUseId(path, id){
+        const contentsObj = this.getCurrentContents(path);
+        const contentsList = contentsObj['contents'];
+        for(const contents of contentsList){
+            if(contents['id'] === id){
+                return contents;
+            }
+        }
+        return null;
     }
 }

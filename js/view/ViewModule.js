@@ -8,6 +8,7 @@ export default class ViewManager {
         this.TreeViewManager = null;
         this.ContentsViewManager = null;
         this.InputViewManager = null;
+        this.currentSelectedTop = null;
     }
 
     init(eventDetector) {
@@ -15,6 +16,7 @@ export default class ViewManager {
         this.TreeViewManager = new TreeViewManager(eventDetector);
         this.ContentsViewManager = new ContentsViewManager(eventDetector);
         this.InputViewManager = new InputViewManager(eventDetector);
+        this.InputViewManager.init();
     }
 
     setStoredCategory(categoryList) {
@@ -26,7 +28,16 @@ export default class ViewManager {
     }
 
     selectedTopCategory(topName, children) {
-        return this.TreeViewManager.init(topName, children);
+        this.currentSelectedTop = topName;
+        this.TreeViewManager.init(topName, children);
+    }
+
+    getSelectedTop(){
+        return this.currentSelectedTop;
+    }
+
+    getNavigator(){
+        return this.TreeViewManager.getTreeUl();
     }
 
     plusButtonClicked() {
@@ -40,6 +51,34 @@ export default class ViewManager {
 
     clickedSubMenu($parentLi, children){
         this.TreeViewManager.renderCurrent($parentLi, children);
+    }
+
+    openInputForm(path){
+        this.InputViewManager.openInputForm(path);
+    }
+
+    closeInputForm(){
+        this.InputViewManager.closeInputForm();
+    }
+
+    checkInputForm(){
+        return this.InputViewManager.isInputFormEmpty();
+    }
+
+    getInputData(){
+        return this.InputViewManager.getInputData();
+    }
+
+    updateLogList(contentsObj){
+        this.ContentsViewManager.renderLogList(contentsObj);
+    }
+
+    openContents(path, title, text){
+        this.InputViewManager.openContents(path, title, text);
+    }
+
+    clearLogList(){
+        this.ContentsViewManager.clearList();
     }
 }
 
@@ -77,15 +116,18 @@ class CategoryViewManager {
 class TreeViewManager {
     constructor(eventDetector) {
         this.eventDetector = eventDetector;
-        this.selectedTree = null;
         this.$treeUl = document.querySelector('#nav');
         this.removedLi = null;
+    }
+
+    getTreeUl(){
+        return this.$treeUl;
     }
 
     init(topName, topChildren) {
         this.clearUl();
         this.createCategory(topName, topChildren);
-        return this.$treeUl.hasChildNodes();
+        // return this.$treeUl.hasChildNodes();
     }
 
     createCategory(category, children, depth = 1) {
@@ -209,7 +251,11 @@ class TreeViewManager {
         }
 
         $submenuUl = $lastLi.children[1];
-        $submenuUl.appendChild(this.createLi('submenu-item', menuName, depth));
+        const $submenuItem = this.createLi('submenu-item', menuName, depth);
+        $submenuUl.appendChild($submenuItem);
+        setTimeout(function () {
+            $submenuItem.click();
+        }, 100);
     }
 
     setMouseEnterEvent($li) {
@@ -275,11 +321,150 @@ class TreeViewManager {
 class ContentsViewManager {
     constructor(eventDetector) {
         this.eventDetector = eventDetector;
+        this.$logUl = document.querySelector('#log-list');
+    }
+
+    renderLogList(contentsObj){
+        this.clearList();
+        for(const contents of contentsObj){
+            this.addLogElement(contents['id'], contents['title'], contents['text']);
+        }
+    }
+
+    addLogElement(date, title, contents){
+        const $logTopDiv = this.createDiv(title, date);
+        const $logContentsDiv = this.createDiv(contents);
+        const $li = this.createLi('log-item');
+        $li.append($logTopDiv);
+        $li.append($logContentsDiv);
+        this.$logUl.appendChild($li);
+    }
+
+    createLi(){
+        const $li = document.createElement('li');
+        $li.classList.add('log-item');
+        $li.addEventListener('click', (e) => {
+            this.eventDetector('LOG_CLICKED', e);
+        })
+        return $li;
+    }
+
+    createDiv(value, date = null){
+        const $div = document.createElement('div');
+        if(date === null){
+            $div.classList.add('log-contents');
+            $div.append(this.createSpan(value, 'log-contents'));
+        } else {
+            $div.classList.add('log-top');
+            $div.append(this.createTitleHeader(value));
+            $div.append(this.createSpan(date, 'log-date'));
+        }
+
+        return $div;
+    }
+
+    createTitleHeader(title){
+        const $header = document.createElement('h3');
+        $header.classList.add('log-title');
+        $header.innerText = title;
+        return $header;
+    }
+
+    createSpan(value, className){
+        const $span = document.createElement('span');
+        $span.classList.add(className);
+        $span.innerText = value;
+        return $span;
+    }
+
+    clearList(){
+        while (this.$logUl.hasChildNodes()) {
+            this.$logUl.removeChild(this.$logUl.firstChild);
+        }
     }
 }
 
 class InputViewManager {
     constructor(eventDetector) {
         this.eventDetector = eventDetector;
+        this.$dimmed = document.querySelector('#dimmed-layer');
+        this.$input_container = document.querySelector('#input-container');
+        this.$input_category_nav = document.querySelector('#input-nav');
+        this.$input_title = document.querySelector('#input-title');
+        this.$input_contents = document.querySelector('#input-contents');
+        this.$input_cancel = document.querySelector('#cancel');
+        this.$input_confirm = document.querySelector('#confirm');
+    }
+
+    init(){
+        this.$input_confirm.addEventListener('click', (e) => {
+            this.eventDetector('CONFIRM_CLICKED');
+            
+        });
+        this.$input_cancel.addEventListener('click', (e) => {
+            this.eventDetector('CANCEL_CLICKED');
+        });
+        this.$dimmed.addEventListener('click', (e) => {
+            this.eventDetector('CANCEL_CLICKED');
+        })
+    }
+
+    openInputForm(path = ''){
+        this.setPath(path);
+        this.toggleClass();
+    }
+
+    toggleClass(value = 'pop-up'){
+        this.$dimmed.classList.toggle(value);
+        this.$input_container.classList.toggle(value);
+    }
+
+    closeInputForm(){
+        this.clearInputForm();
+        this.toggleClass();
+    }
+
+    clearInputForm(){
+        this.$input_category_nav.innerText = '';
+        this.$input_title.value = '';
+        this.$input_contents.value = '';
+        this.$input_cancel.innerText = '취소';
+        this.$input_confirm.innerText = '확인';
+        this.$input_title.placeholder = '제목 입력';
+        this.$input_contents.placeholder = '내용 입력';
+    }
+
+    isInputFormEmpty(){
+        if(this.$input_title.value === ''){
+            this.$input_title.placeholder = '제목을 적어주세요!!';
+            return false;
+        }
+
+        if(this.$input_contents.value === ''){
+            this.$input_contents.placeholder = '내용을 적어주세요!';
+            return false;
+        }
+
+        return true;
+    }
+
+    setPath(path){
+        const pathText = path.join('/');
+        this.$input_category_nav.innerText = pathText;
+    }
+
+    getInputData(){
+        return {
+            title : this.$input_title.value,
+            contents : this.$input_contents.value,
+            path : this.$input_category_nav.innerText.split('/')
+        }
+    }
+
+    openContents(path, title, text){
+        this.$input_category_nav.innerText = path.join('/');
+        this.$input_title.value = title;
+        this.$input_contents.value = text;
+        this.toggleClass();
     }
 }
