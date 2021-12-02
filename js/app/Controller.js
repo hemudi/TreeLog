@@ -27,6 +27,9 @@ export default class Controller {
             },
             INPUT_CATEGORY: () => {
                 this.categoryInputEventHandler(event);
+            },
+            SUB_MENU_CLICKED: () => {
+                this.subMenuClickedEventHandler(event);
             }
         }
 
@@ -39,7 +42,7 @@ export default class Controller {
         const categoryTree = this.dataManager.getCategoryTree(topName);
 
         if (categoryTree === null) return;
-        if (!this.viewManager.selectedTopCategory(categoryTree)) return;
+        if (!this.viewManager.selectedTopCategory(topName, categoryTree.getTopCategoryChildren())) return;
         this.toggleClass('selected');
     }
 
@@ -65,12 +68,35 @@ export default class Controller {
         this.viewManager.addNewCategory(categoryName);
     }
 
-    getPath(childNodes){
+    subMenuClickedEventHandler(event){
+        const $submenuLi = event.currentTarget;
+        const moveTo = $submenuLi.innerText;
+        const $menu_item = $submenuLi.closest('.menu-item');
+        const $menu = $submenuLi.closest('#nav');
+        const depth = $menu_item.id[$menu_item.id.length-1];
+
+        $menu_item.firstChild.innerText = moveTo;
+        const path = this.getPath($menu.childNodes, depth);
+        const children = this.dataManager.getChildren(path);
+        this.viewManager.clickedSubMenu($menu_item, children);
+
+        // view
+        // 1. li span 이름 바꾸기
+        // 2. 부모의 아래 형제 다 지우고 새로 구한 childList 로 하위 버튼 생성
+    }
+
+    getPath(childNodes, depth = 5){
         const path = [];
+        let innerText = '';
         for(const node of childNodes){
-            path.push(node.innerText);
+            innerText = node.firstChild.innerText;
+            if(depth === 0) return path;
+            if(innerText !== 'X' && innerText !== '▼' && innerText !== '') {
+                path.push(innerText);
+                depth--;
+            }
         }
-        path.pop();
+        // path.pop();
         return path;
     }
 
@@ -160,10 +186,4 @@ export default class Controller {
     addClickEventHandler(){
         this.viewManager.plusButtonClicked();
     }
-
-    topCategoryClickEventHandler(event) {
-        const $button = event.currentTarget;
-        const innerText = $button.innerText;
-    }
-
 }

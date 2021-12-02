@@ -46,7 +46,7 @@ export default class CategoryTree {
         }
 
         path.shift();
-        return this.getCurrentCategory(path, getChild(currentCategory, path[0]));
+        return this.getCurrentCategory(path, this.getChild(currentCategory, path[0]));
     }
 
     /* 현재 카테고리의 자식을 이름으로 찾아서 반환 */

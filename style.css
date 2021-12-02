@@ -458,8 +458,12 @@ div.buttons {
 }
 
 /* test 용 */
-.menu-item:hover > .submenu {
+/* .menu-item:hover > .submenu {
 	display: block;
+} */
+
+.menu-item.active > .submenu {
+    display: block;
 }
 
 .submenu > li:hover {

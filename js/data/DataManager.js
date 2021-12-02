@@ -136,5 +136,11 @@ export default class DataManager {
         const categoryContents = this.getContents(path);
         categoryContents.addContents(title, contents);
         this.setLocalStorage();
-    }    
+    }
+
+    getChildren(path){
+        const categoryTree = this.getCategoryTree(path[0]);
+        const children = categoryTree.getCurrentCategory(path)['children'];
+        return children;
+    }
 }
