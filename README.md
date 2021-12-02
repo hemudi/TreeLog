@@ -5,3 +5,4 @@
 ## 🎄 __TreeLog 란?__
 - 트리 구조로 된 최대 다섯 단계의 카테고리 별로 짧은 Log 를 기록할 수 있는 페이지
 -  [TreeNode Page](https://hemudi.github.io/) ➤▶︎ 버그 공사중입니다! ^-^)rP 뚝딱....
+-  [Figma : 초기 설계](https://www.figma.com/file/hpZOiqzwZLagMC0TUZiXFQ/%23TreeLog_Share?node-id=0%3A1)
